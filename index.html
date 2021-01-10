@@ -1,0 +1,130 @@
+<canvas id="canvas" width="600" height="400"></canvas>
+
+<script src="blob.js"></script>
+<script src="vector.js"></script>
+
+<script>
+
+    let blobs = [];
+    //let pixels = [];
+
+    window.onload = function()
+    {
+        canvas = document.getElementById("canvas");
+        ctx = canvas.getContext("2d");
+
+        /*for (var i = 0; i < canvas.width / 2; i++)
+        {
+            for (var j = 0; j < canvas.height / 2; j++)
+            {
+                pixels.push(0);
+            }
+        }*/
+        for (var i = 0; i < 8; i++)
+        {
+            blobs.push(new Blob(Math.random()*canvas.width,Math.random()*canvas.height));
+        }
+        
+        var loop = setInterval(gameLoop,1000/30);
+    }
+
+    gameLoop = function()
+    {
+        
+        //draw();
+
+        drawPixels();
+        for (var i = 0; i < blobs.length; i++)
+        {
+            blobs[i].update(canvas.width,canvas.height);
+            //blobs[i].draw(ctx);
+        }
+        
+        //blob.draw(ctx);
+
+    }
+
+    drawPixels = function()
+    {
+
+        for (var i = 0; i < canvas.width; i+=4)
+        {
+            let dx = []
+            for (var k = 0; k < blobs.length; k++)
+            {
+                dx[k] = blobs[k].pos.x - i
+                dx[k] *= dx[k];
+            }
+            for (var j = 0; j < canvas.height; j+=4)
+            {
+                var sum = 0;
+                let d = [];
+                for (var k = 0; k < blobs.length; k++)
+                {
+                    d[k] = blobs[k].pos.y - j
+                    d[k] *= d[k];
+                    d[k] += dx[k];
+                    sum += 10000 * blobs[k].r / d[k];
+
+                }
+
+                //sum /= blobs.length;
+                /*var d = (blob.pos.y - j);
+                d *= d;
+                d += dx;*/
+
+                //var d = Vector.DistanceSquared(blob.pos,new Vector(i,j));
+                
+                var r = sum;
+                /*if (r <0)
+                {
+                    r = 0;
+                }else */
+                if (r > 340)
+                {
+                    r = 340;
+                }
+                else if (r < 50)
+                {
+                    r /= 1.01;
+                }
+
+                /*var g = 0;
+                var b = 0;
+                var a = 255;*/
+
+                /*if (pixels[i][j] < r || pixels[i][j] > r )
+                {
+                    pixels[i][j] = r;*/
+                    ctx.fillStyle = "hsl("+r+",100%,50%)";
+                    ctx.fillRect(i,j,4,4);
+                //}
+
+                 
+
+                //d[0] = r;
+                //d[1] = g;
+                //d[2] = b;
+                //d[3] = a;
+
+                //ctx.putImageData(id,i,j);
+
+            }
+        }
+    }
+
+    draw = function()
+    {
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+    }
+
+    ToHex = function(x)
+    {
+        var digits = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+        var str = digits[(x % 16)];
+        x = Math.floor(x/16);
+        str = digits[x] + str;
+        return str;
+    }
+</script>
